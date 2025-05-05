@@ -1,0 +1,34 @@
+// config/cors.php
+return [
+    'paths' => ['api/*'],
+    'allowed_methods' => ['*'],
+    'allowed_origins' => ['http://localhost:5173'], // Vite dev server default URL
+    'allowed_origins_patterns' => [],
+    'allowed_headers' => ['*'],
+    'exposed_headers' => [],
+    'max_age' => 0,
+    'supports_credentials' => true,
+];
+
+// src/router/index.js
+router.beforeEach((to, from, next) => {
+  const isAuthenticated = !!localStorage.getItem('token');
+  
+  if (to.meta.requiresAuth && !isAuthenticated) {
+    next('/login');
+  } else {
+    next();
+  }
+});
+
+// File upload dengan FormData
+const uploadImage = async (file, maintenanceId) => {
+  const formData = new FormData();
+  formData.append('imagebefore', file);
+  
+  return api.post(`/maintenance/${maintenanceId}/image`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  });
+};
