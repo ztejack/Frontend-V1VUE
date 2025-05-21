@@ -1,7 +1,8 @@
 <template>
   <div class="flex h-screen bg-zinc-100 dark:bg-zinc-500">
     <!-- Sidebar Component -->
-    <Sidebar :menuItems="menuItems" @setActive="handleSetActive" @logout="handleLogout" />
+    <Sidebar v-if="grandted" :menuItems="menuItems" @setActive="handleSetActive" @logout="handleLogout" />
+    <Sidebar v-else :menuItems="menuItemsx" @setActive="handleSetActive" @logout="handleLogout" />
     <!-- Main Content -->
     <main class="flex-grow overflow-auto">
       <div class="mx-auto p-4">
@@ -12,7 +13,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import Sidebar from '@/components/sidebar/AppSidebar.vue'
 import {
   HomeIcon,
@@ -32,12 +33,21 @@ const toast = useToast()
 const router = useRouter()
 const menuItems = ref([
   { title: 'Dashboard', icon: HomeIcon, active: true, route: 'Home', path: '/' },
-  // { title: 'Users', icon: UsersIcon, active: false, route: 'Users', path: '/users' },
+  { title: 'Users', icon: UsersIcon, active: false, route: 'Users', path: '/users' },
   { title: 'Asset', icon: CubeTransparentIcon, active: false, route: 'Assets', path: '/assets' },
   { title: 'Maintenance', icon: Cog6ToothIcon, active: false, route: 'Maintenances', path: '/maintenances' },
   { title: 'Inspeksi', icon: ClipboardDocumentIcon, active: false, route: 'Inspeksis', path: '/inspeksis' },
   // { title: 'Login', icon: BoltIcon, active: false, route: 'Login' },
 ])
+const menuItemsx = ref([
+  { title: 'Dashboard', icon: HomeIcon, active: true, route: 'Home', path: '/' },
+  { title: 'Asset', icon: CubeTransparentIcon, active: false, route: 'Assets', path: '/assets' },
+  { title: 'Maintenance', icon: Cog6ToothIcon, active: false, route: 'Maintenances', path: '/maintenances' },
+  { title: 'Inspeksi', icon: ClipboardDocumentIcon, active: false, route: 'Inspeksis', path: '/inspeksis' },
+])
+
+const auth = useAuthStore()
+const grandted = computed(() => ['Admin', 'SuperAdmin'].includes(auth.user?.role))
 
 const handleSetActive = (index) => {
   menuItems.value.forEach((item, i) => {

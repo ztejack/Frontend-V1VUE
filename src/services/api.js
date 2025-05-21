@@ -3,6 +3,9 @@ import axios from 'axios'
 import { getAuthToken } from '@/helpers/getAuthToken'
 import { useAuthStore } from '@/stores/auth'
 import router from '@/router'
+// const httpsAgent = new httpsAgent.Agent({
+//   rejectUnauthorized: false, // BYPASS sertifikat SSL
+// })
 const api = axios.create({
   // baseURL: import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api/v1/',
   baseURL: import.meta.env.VITE_API_URL || 'https://119.252.161.220/api/v1/',
@@ -11,6 +14,7 @@ const api = axios.create({
     Accept: 'application/json',
     'MYP-API-KEY': import.meta.env.VITE_API_KEY,
   },
+  // httpsAgent,
 })
 
 // Tambahkan Authorization header otomatis
