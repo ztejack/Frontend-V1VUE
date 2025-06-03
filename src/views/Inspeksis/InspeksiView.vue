@@ -7,6 +7,24 @@
         <h2 class="text-xl font-bold text-gray-800 dark:text-white">Data Inspeksi</h2>
         <p class="text-sm text-gray-500 dark:text-gray-400">Manajemen dan monitoring Inspeksi</p>
       </div>
+      <button
+        v-if="grandted"
+        @click="openAddModal"
+        class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md flex items-center text-sm"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+        </svg>
+        Tambah Inspeksi
+      </button>
+      <InspeksiFormModal
+        v-if="grandted"
+        :show="showAddModal"
+        @close="closeAddModal"
+        @store="handleInspeksiStore"
+        ref="showModal"
+        @submitted="fetchInspeksi"
+      />
     </div>
 
     <div
@@ -43,6 +61,12 @@
 
     <div class="overflow-auto overscroll-contain">
       <template v-if="!inspeksis.data.length">
+        <div class="text-center text-gray-500 py-4 flex items-center justify-center">
+          <ArrowPathIcon class="animate-spin h-6 w-6 inline-block mr-2" />
+          <span class="text-gray-700 dark:text-gray-300">Memuat data inspeksi...</span>
+        </div>
+      </template>
+      <template v-else-if="inspeksis.data.length === 0">
         <div class="text-center text-gray-500 py-4">Tidak ada data inspeksi</div>
       </template>
       <appTabel :columns="columns" :data="inspeksis.data">
@@ -107,7 +131,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch, computed } from 'vue'
 import { useToast } from 'vue-toastification'
 import { ArrowPathIcon } from '@heroicons/vue/24/outline'
 import appTabel from '@/components/tabel/appTabel.vue'
@@ -117,6 +141,8 @@ import dayjs from 'dayjs'
 import router from '@/router'
 import { useStatusHelper } from '@/helpers/useStatusHelper'
 import { useUrgencyHelper } from '@/helpers/useUrgencyHelper'
+import { useAuthStore } from '@/stores/auth'
+import InspeksiFormModal from '@/views/Inspeksis/components/addInspeksiModal.vue'
 
 const { getStatusNameById, getStatusClassById } = useStatusHelper()
 const { getUrgencyNameById, getUrgencyClassById } = useUrgencyHelper()
@@ -124,8 +150,11 @@ const { getUrgencyNameById, getUrgencyClassById } = useUrgencyHelper()
 const toast = useToast()
 const perPage = ref(5)
 const searchTerm = ref('')
+const auth = useAuthStore()
+const grandted = computed(() => ['Admin', 'SuperAdmin', 'Inspeksi'].includes(auth.user?.role))
 
 const debounceTimeout = ref(null)
+const showAddModal = ref(false)
 
 const inspeksis = ref({
   data: [],
@@ -157,6 +186,16 @@ const fetchInspeksi = async (page = 1) => {
   } catch (e) {
     toast.error('Gagal memuat data inspeksi:', e)
   }
+}
+const handleInspeksiStore = () => {
+  fetchInspeksi()
+}
+const openAddModal = () => {
+  showAddModal.value = true
+}
+
+const closeAddModal = () => {
+  showAddModal.value = false
 }
 
 onMounted(() => {

@@ -15,8 +15,8 @@ const fetchStatusList = async () => {
 
 // Ambil nama status berdasarkan ID
 const getStatusNameById = (id) => {
-  const status = statusList.value.find((s) => s.id === id)
-  return status ? status.status : 'tidak diketahui'
+  const status = statusList.value.find((s) => s[0] === id)
+  return status ? status[1] : 'tidak diketahui'
 }
 
 // Ambil class warna status dari nama

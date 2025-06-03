@@ -11,9 +11,17 @@
     </div>
 
     <div class="overflow-auto overscroll-contain">
+      <template v-if="loading">
+        <div class="text-center text-gray-500 py-4 flex items-center justify-center">
+          <ArrowPathIcon class="animate-spin h-6 w-6 inline-block mr-2" />
+          <span class="text-gray-700 dark:text-gray-300">Memuat data user...</span>
+        </div>
+      </template>
+      <template v-else-if="!users.length">
+        <div class="text-center text-gray-500 py-4">Tidak ada data user</div>
+      </template>
       <appTabel :columns="columns" :data="users">
         <template #actions="{ item }">
-          <!-- goto detail page -->
           <button
             @click="goToDetail(item)"
             class="text-sm dark:bg-blue-300 text-blue-800 font-semibold mr-2 px-4 py-1 rounded hover:bg-blue-500 hover:text-blue-200 focus:bg-blue-800 focus:text-blue-200"
@@ -21,7 +29,6 @@
             Detail
           </button>
         </template>
-        <!-- <button class="text-sm text-blue-500 hover:underline">Detail</button> -->
       </appTabel>
     </div>
 
@@ -58,6 +65,8 @@ import router from '@/router'
 import userService from '@/services/userService'
 const toast = useToast()
 const perPage = ref(20)
+const loading = ref(true)
+
 const users = ref({
   data: [],
   pagination: {
@@ -84,22 +93,23 @@ const auth = useAuthStore()
 const grandted = computed(() => ['Admin', 'SuperAdmin'].includes(auth.user?.role))
 
 const fetchUsers = async (page = 1) => {
+  loading.value = true
   try {
     const res = await userService.getAll(page, perPage.value)
     users.value = res.users
-    console.log('users', users.value)
+    loading.value = false
   } catch (e) {
-    toast.error('Gagal memuat data asset:', e)
+    toast.error('Gagal memuat data user:', e)
   }
 }
 
 onMounted(() => {
   fetchUsers()
 })
-function changeLimit(newLimit) {
-  perPage.value = newLimit
-  fetchUsers(1) // Reset ke page 1 saat limit berubah
-}
+// function changeLimit(newLimit) {
+//   perPage.value = newLimit
+//   fetchUsers(1) // Reset ke page 1 saat limit berubah
+// }
 
 const goToDetail = (item) => {
   router.push({ name: 'AssetsDetail', params: { id: item.id } })

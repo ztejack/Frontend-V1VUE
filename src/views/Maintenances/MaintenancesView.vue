@@ -45,6 +45,12 @@
 
     <div class="overflow-auto overscroll-contain">
       <template v-if="!maintenances.data.length">
+        <div class="text-center text-gray-500 py-4 flex items-center justify-center">
+          <ArrowPathIcon class="animate-spin h-6 w-6 inline-block mr-2" />
+          <span class="text-gray-700 dark:text-gray-300">Memuat data maintenance...</span>
+        </div>
+      </template>
+      <template v-else-if="maintenances.data.length === 0">
         <div class="text-center text-gray-500 py-4">Tidak ada data maintenance</div>
       </template>
       <appTabel :columns="columns" :data="maintenances.data">
@@ -154,6 +160,12 @@
 
     <div class="overflow-auto overscroll-contain">
       <template v-if="!maintenancesOn.data.length">
+        <div class="text-center text-gray-500 py-4 flex items-center justify-center">
+          <ArrowPathIcon class="animate-spin h-6 w-6 inline-block mr-2" />
+          <span class="text-gray-700 dark:text-gray-300">Memuat data maintenance...</span>
+        </div>
+      </template>
+      <template v-else-if="maintenancesOn.data.length === 0">
         <div class="text-center text-gray-500 py-4">Tidak ada data maintenance</div>
       </template>
       <appTabel :columns="columns" :data="maintenancesOn.data">
@@ -260,7 +272,13 @@
     </div>
 
     <div class="overflow-auto overscroll-contain">
-      <template v-if="!maintenancesOn.data.length">
+      <template v-if="!maintenancesClose.data.length">
+        <div class="text-center text-gray-500 py-4 flex items-center justify-center">
+          <ArrowPathIcon class="animate-spin h-6 w-6 inline-block mr-2" />
+          <span class="text-gray-700 dark:text-gray-300">Memuat data maintenance...</span>
+        </div>
+      </template>
+      <template v-else-if="maintenancesClose.data.length === 0">
         <div class="text-center text-gray-500 py-4">Tidak ada data maintenance</div>
       </template>
       <appTabel :columns="columns" :data="maintenancesClose.data">

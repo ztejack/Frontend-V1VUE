@@ -18,7 +18,7 @@ import Sidebar from '@/components/sidebar/AppSidebar.vue'
 import {
   HomeIcon,
   UsersIcon,
-  BoltIcon,
+  // BoltIcon,
   CubeTransparentIcon,
   Cog6ToothIcon,
   ClipboardDocumentIcon,

@@ -6,7 +6,7 @@ const stusendpoint = 'status'
 const userService = {
   getAll: async (page = 1, limit = 20) => {
     const res = await api.get(endpoint, { params: { page, limit } })
-    console.log(res.data)
+    // console.log(res.data)
     return res.data
   },
 

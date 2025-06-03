@@ -67,6 +67,12 @@
     </div>
 
     <div class="overflow-auto overscroll-contain">
+      <template v-if="!assets.data.length">
+        <div class="text-center text-gray-500 py-4 flex items-center justify-center">
+          <ArrowPathIcon class="animate-spin h-6 w-6 inline-block mr-2" />
+          <span class="text-gray-700 dark:text-gray-300">Memuat data asset...</span>
+        </div>
+      </template>
       <appTabel :columns="columns" :data="assets.data">
         <template #cell-category="{ item }">
           <template v-if="Array.isArray(item.category)">
@@ -158,9 +164,9 @@ const assets = ref({
 })
 const columns = [
   { key: 'id', label: 'ID' },
-  { key: 'stockcode', label: 'Stock Code' },
-  { key: 'serialnumber', label: 'Serialnumber' },
+  // { key: 'stockcode', label: 'Stock Code' },
   { key: 'asset_code', label: 'Asset Code' },
+  { key: 'serialnumber', label: 'Serialnumber' },
   { key: 'asset_name', label: 'Asset name' },
   { key: 'brand', label: 'brand' },
   { key: 'model', label: 'model' },

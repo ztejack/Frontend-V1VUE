@@ -23,6 +23,23 @@ export default {
       throw error
     }
   },
+  stores: async (data) => {
+    try {
+      const formData = new FormData()
+      for (const key in data.value) {
+        formData.append(key, data.value[key])
+      }
+
+      const response = await api.post(endpoint, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      })
+
+      return response.data
+    } catch (error) {
+      console.error('Gagal menyimpan Inspeksi:', error)
+      throw error
+    }
+  },
   // status: async () => {
   //   const res = await api.get(stusendpoint, { params: { statustype: 'MTNC' } })
   //   return res.data
