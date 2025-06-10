@@ -7,8 +7,24 @@
         <h2 class="text-xl font-bold text-gray-800 dark:text-white">Data Maintenance</h2>
         <p class="text-sm text-gray-500 dark:text-gray-400">Manajemen dan monitoring Maintenance</p>
       </div>
-      <!-- Modal form -->
-      <!-- <AssetFormModal v-if="grandted" ref="showModal" @submitted="fetchAssets" /> -->
+      <button
+        v-if="grandted"
+        @click="openAddModal"
+        class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md flex items-center text-sm"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+        </svg>
+        Tambah Maintenance
+      </button>
+      <MaintenanceFormModal
+        v-if="grandted"
+        :show="showAddModal"
+        @close="closeAddModal"
+        @store="handleMaintenanceStore"
+        ref="showModal"
+        @submitted="fetchMaintenance"
+      />
     </div>
 
     <div
@@ -55,7 +71,6 @@
       </template>
       <appTabel :columns="columns" :data="maintenances.data">
         <!-- Cek apakah data kosong -->
-
         <template #cell-asset="{ item }">
           {{ item.asset?.asset_name || '-' }}
         </template>
@@ -81,13 +96,37 @@
           {{ dayjs(item.created_at).format('dddd, D MMMM YYYY HH:mm') }}
         </template>
         <template #actions="{ item }">
-          <!-- goto detail page -->
-          <button
-            @click="goToDetail(item)"
-            class="text-sm dark:bg-blue-300 text-blue-800 font-semibold mr-2 px-4 py-1 rounded hover:bg-blue-500 hover:text-blue-200 focus:bg-blue-800 focus:text-blue-200"
-          >
-            Detail
-          </button>
+          <div class="flex items-center space-x-2">
+            <!-- goto detail page -->
+            <button
+              @click="goToDetail(item)"
+              class="text-sm dark:bg-blue-300 text-blue-800 font-semibold mr-2 px-4 py-1 rounded hover:bg-blue-500 hover:text-blue-200 focus:bg-blue-800 focus:text-blue-200 fle"
+            >
+              <span class="flex items-center gap-1">
+                <DocumentMagnifyingGlassIcon class="h-4 w-4" />
+                Detail
+              </span>
+            </button>
+            <button
+              @click="openMaintenanceModal(item.id)"
+              class="text-sm dark:bg-emerald-300 text-emerald-800 font-semibold mr-2 px-4 py-1 rounded hover:bg-green-600 hover:text-emerald-300 focus:bg-green-700 focus:text-emerald-200 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <span class="flex items-center gap-1">
+                <PencilSquareIcon class="h-4 w-4" />
+                Update
+              </span>
+            </button>
+            <button
+              :disabled="!canDelete(item)"
+              @click="deleteMaintenance(item)"
+              class="text-sm dark:bg-red-300 text-red-800 font-semibold mr-2 px-4 py-1 rounded hover:bg-red-600 hover:text-red-300 focus:bg-red-700 focus:text-red-200 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <span class="flex items-center gap-1">
+                <ExclamationTriangleIcon class="h-4 w-4" />
+                Delete
+              </span>
+            </button>
+          </div>
         </template>
         <!-- <button class="text-sm text-blue-500 hover:underline">Detail</button> -->
       </appTabel>
@@ -114,6 +153,12 @@
       />
     </div>
   </div>
+  <maintenanceUpdateModal
+    v-model:show="showUpdateModal"
+    :model-value="selectedMaintenanceData"
+    @close="showUpdateModal = false"
+    @store="fetchMaintenance"
+  />
 
   <!-- pROCESS -->
   <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow mt-4">
@@ -194,13 +239,26 @@
           {{ dayjs(item.created_at).format('dddd, D MMMM YYYY HH:mm') }}
         </template>
         <template #actions="{ item }">
-          <!-- goto detail page -->
-          <button
-            @click="goToDetail(item)"
-            class="text-sm dark:bg-blue-300 text-blue-800 font-semibold mr-2 px-4 py-1 rounded hover:bg-blue-500 hover:text-blue-200 focus:bg-blue-800 focus:text-blue-200"
-          >
-            Detail
-          </button>
+          <div class="flex items-center space-x-2">
+            <!-- goto detail page -->
+            <button
+              @click="goToDetail(item)"
+              class="text-sm dark:bg-blue-300 text-blue-800 font-semibold mr-2 px-4 py-1 rounded hover:bg-blue-500 hover:text-blue-200 focus:bg-blue-800 focus:text-blue-200 fle"
+            >
+              <span class="flex items-center gap-1">
+                <DocumentMagnifyingGlassIcon class="h-4 w-4" />
+                Detail
+              </span>
+            </button>
+            <button
+              class="text-sm dark:bg-emerald-300 text-emerald-800 font-semibold mr-2 px-4 py-1 rounded hover:bg-green-600 hover:text-emerald-300 focus:bg-green-700 focus:text-emerald-200 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <span class="flex items-center gap-1">
+                <PencilSquareIcon class="h-4 w-4" />
+                Update
+              </span>
+            </button>
+          </div>
         </template>
         <!-- <button class="text-sm text-blue-500 hover:underline">Detail</button> -->
       </appTabel>
@@ -307,13 +365,18 @@
           {{ dayjs(item.created_at).format('dddd, D MMMM YYYY HH:mm') }}
         </template>
         <template #actions="{ item }">
-          <!-- goto detail page -->
-          <button
-            @click="goToDetail(item)"
-            class="text-sm dark:bg-blue-300 text-blue-800 font-semibold mr-2 px-4 py-1 rounded hover:bg-blue-500 hover:text-blue-200 focus:bg-blue-800 focus:text-blue-200"
-          >
-            Detail
-          </button>
+          <div class="flex items-center space-x-2">
+            <!-- goto detail page -->
+            <button
+              @click="goToDetail(item)"
+              class="text-sm dark:bg-blue-300 text-blue-800 font-semibold mr-2 px-4 py-1 rounded hover:bg-blue-500 hover:text-blue-200 focus:bg-blue-800 focus:text-blue-200"
+            >
+              <span class="flex items-center gap-1">
+                <DocumentMagnifyingGlassIcon class="h-4 w-4" />
+                Detail
+              </span>
+            </button>
+          </div>
         </template>
         <!-- <button class="text-sm text-blue-500 hover:underline">Detail</button> -->
       </appTabel>
@@ -343,14 +406,22 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch, computed } from 'vue'
 import { useToast } from 'vue-toastification'
-import { ArrowPathIcon } from '@heroicons/vue/24/outline'
+import {
+  ArrowPathIcon,
+  ExclamationTriangleIcon,
+  PencilSquareIcon,
+  DocumentMagnifyingGlassIcon,
+} from '@heroicons/vue/24/outline'
 import appTabel from '@/components/tabel/appTabel.vue'
 import Pagination from '@/components/AppsPagination.vue'
 import maintenanceService from '@/services/maintenanceService'
 import dayjs from 'dayjs'
 import router from '@/router'
+import { useAuthStore } from '@/stores/auth'
+import MaintenanceFormModal from './components/addMaintenanceModal.vue'
+import maintenanceUpdateModal from './components/updateMaintenanceModal.vue'
 
 const toast = useToast()
 const perPage = ref(5)
@@ -359,6 +430,10 @@ const perPageOn = ref(5)
 const searchTerm = ref('')
 const searchTermOn = ref('')
 const searchTermCls = ref('')
+const auth = useAuthStore()
+const showAddModal = ref(false)
+
+const grandted = computed(() => ['Admin', 'SuperAdmin', 'Inspeksi'].includes(auth.user?.role))
 
 const debounceTimeout = ref(null)
 
@@ -528,6 +603,78 @@ function changeLimitOn(newLimit) {
 
 const goToDetail = (item) => {
   router.push({ name: 'MaintenanceDetail', params: { id: item.id } })
+}
+
+const handleMaintenanceStore = () => {
+  fetchMaintenance()
+}
+const openAddModal = () => {
+  showAddModal.value = true
+}
+
+const closeAddModal = () => {
+  showAddModal.value = false
+}
+
+const canDelete = (item) => {
+  const created = dayjs(item.created_at)
+  const now = dayjs()
+  return now.diff(created, 'minute') <= 60
+}
+function deleteMaintenance(item) {
+  if (confirm(`Apakah Anda yakin ingin menghapus maintenance dengan ID ${item.id}?`)) {
+    maintenanceService
+      .delete(item.id)
+      .then(() => {
+        toast.success('Maintenance berhasil dihapus')
+        fetchMaintenance()
+      })
+      .catch((error) => {
+        toast.error(`Gagal menghapus maintenance: ${error.message}`)
+      })
+  }
+}
+
+const selectedMaintenanceData = ref(null) // untuk menyimpan data maintenance yang dipilih
+
+const showUpdateModal = ref(false)
+const isLoadingMaintenance = ref(false)
+const maintenanceError = ref(null)
+const maintenanceForm = ref({})
+const selectedAsset = ref(null)
+
+const openMaintenanceModal = async (id) => {
+  showUpdateModal.value = true
+  isLoadingMaintenance.value = true
+  maintenanceError.value = null
+  maintenanceForm.value = {}
+  selectedAsset.value = null
+  selectedMaintenanceData.value = null
+
+  try {
+    const { data } = await maintenanceService.get(id)
+    const maintenance = data
+
+    console.log('Selected Maintenance:', data)
+    selectedMaintenanceData.value = maintenance
+
+    maintenanceForm.value = {
+      asset_name_search: maintenance.asset.asset_name,
+      urgency_id: maintenance.urgency_id,
+      description: maintenance.description,
+      imagebefore: null,
+    }
+
+    selectedAsset.value = {
+      asset_code: maintenance.asset.asset_code,
+      location: maintenance.asset.location,
+    }
+  } catch (error) {
+    maintenanceError.value = 'Gagal memuat data maintenance.'
+    console.error(error)
+  } finally {
+    isLoadingMaintenance.value = false
+  }
 }
 
 const getStatusClass = (status) => {

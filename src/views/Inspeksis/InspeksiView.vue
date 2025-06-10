@@ -95,13 +95,35 @@
           {{ dayjs(item.created_at).format('dddd, D MMMM YYYY HH:mm') }}
         </template>
         <template #actions="{ item }">
-          <!-- goto detail page -->
-          <button
-            @click="goToDetail(item)"
-            class="text-sm dark:bg-blue-300 text-blue-800 font-semibold mr-2 px-4 py-1 rounded hover:bg-blue-500 hover:text-blue-200 focus:bg-blue-800 focus:text-blue-200"
-          >
-            Detail
-          </button>
+          <div class="flex items-center space-x-2">
+            <button
+              @click="goToDetail(item)"
+              class="text-sm dark:bg-blue-300 text-blue-800 font-semibold mr-2 px-4 py-1 rounded hover:bg-blue-500 hover:text-blue-200 focus:bg-blue-800 focus:text-blue-200 fle"
+            >
+              <span class="flex items-center gap-1">
+                <DocumentMagnifyingGlassIcon class="h-4 w-4" />
+                Detail
+              </span>
+            </button>
+            <button
+              class="text-sm dark:bg-emerald-300 text-emerald-800 font-semibold mr-2 px-4 py-1 rounded hover:bg-green-600 hover:text-emerald-300 focus:bg-green-700 focus:text-emerald-200 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <span class="flex items-center gap-1">
+                <PencilSquareIcon class="h-4 w-4" />
+                Update
+              </span>
+            </button>
+            <button
+              :disabled="!canDelete(item)"
+              @click="deleteInspeksi(item)"
+              class="text-sm dark:bg-red-300 text-red-800 font-semibold mr-2 px-4 py-1 rounded hover:bg-red-600 hover:text-red-300 focus:bg-red-700 focus:text-red-200 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <span class="flex items-center gap-1">
+                <ExclamationTriangleIcon class="h-4 w-4" />
+                Delete
+              </span>
+            </button>
+          </div>
         </template>
         <!-- <button class="text-sm text-blue-500 hover:underline">Detail</button> -->
       </appTabel>
@@ -133,7 +155,12 @@
 <script setup>
 import { ref, onMounted, watch, computed } from 'vue'
 import { useToast } from 'vue-toastification'
-import { ArrowPathIcon } from '@heroicons/vue/24/outline'
+import {
+  ArrowPathIcon,
+  ExclamationTriangleIcon,
+  PencilSquareIcon,
+  DocumentMagnifyingGlassIcon,
+} from '@heroicons/vue/24/outline'
 import appTabel from '@/components/tabel/appTabel.vue'
 import Pagination from '@/components/AppsPagination.vue'
 import inspeksiService from '@/services/inspeksiService'
@@ -234,5 +261,24 @@ function changeLimit(newLimit) {
 
 const goToDetail = (item) => {
   router.push({ name: 'InspeksiDetail', params: { id: item.id } })
+}
+
+const canDelete = (item) => {
+  const created = dayjs(item.created_at)
+  const now = dayjs()
+  return now.diff(created, 'minute') <= 60
+}
+function deleteInspeksi(item) {
+  if (confirm(`Apakah Anda yakin ingin menghapus inspeksi dengan ID ${item.id}?`)) {
+    inspeksiService
+      .delete(item.id)
+      .then(() => {
+        toast.success('Inspeksi berhasil dihapus')
+        fetchInspeksi()
+      })
+      .catch((error) => {
+        toast.error(`Gagal menghapus inspeksi: ${error.message}`)
+      })
+  }
 }
 </script>

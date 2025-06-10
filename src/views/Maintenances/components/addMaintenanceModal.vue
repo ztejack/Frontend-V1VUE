@@ -7,7 +7,7 @@
 
           <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-4xl p-6 z-10">
             <div class="flex justify-between items-center mb-4">
-              <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Tambah Inspeksi</h2>
+              <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Tambah Maintenance</h2>
               <button @click="closeModal" class="text-gray-400 hover:text-gray-600">
                 <span class="sr-only">Tutup</span>
                 ✕
@@ -21,7 +21,6 @@
             <div v-if="error" class="mb-4 p-3 bg-red-100 text-red-700 rounded-md dark:bg-red-400/50 dark:text-red-200">
               {{ error }}
             </div>
-
             <form v-if="!loading" @submit.prevent="submitForm" class="space-y-4">
               <div class="grid grid-cols-1 gap-y-4 gap-x-4 sm:grid-cols-2">
                 <div class="relative col-span-2">
@@ -70,35 +69,6 @@
                   />
                 </div>
 
-                <!-- Maintenance Needed -->
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Butuh Maintenance?</label>
-                  <select
-                    v-model="form.maintenance_needed"
-                    class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-zinc-500 focus:border-zinc-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                  >
-                    <option value="" disabled selected>Pilih</option>
-                    <option value="1">Ya</option>
-                    <option value="0">Tidak</option>
-                  </select>
-                  <p v-if="errors.maintenance_needed" class="text-red-500 text-sm">{{ errors.maintenance_needed[0] }}</p>
-                </div>
-
-                <!-- Jenis Maintenance -->
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Jenis Inspeksi</label>
-                  <select
-                    v-model="form.type_id"
-                    class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-zinc-500 focus:border-zinc-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                  >
-                    <option value="" disabled selected>Pilih</option>
-                    <option v-for="type in types" :key="type.id" :value="type.id">
-                      {{ type.name }}
-                    </option>
-                  </select>
-                  <p v-if="errors.type_id" class="text-red-500 text-sm">{{ errors.type_id[0] }}</p>
-                </div>
-
                 <!-- Tingkat Urgensi -->
                 <div>
                   <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tingkat Urgensi</label>
@@ -115,14 +85,14 @@
                 </div>
                 <!-- Upload Gambar -->
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Gambar (Opsional)</label>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Gambar</label>
                   <input
                     type="file"
                     @change="handleFileChange"
                     class="mt-1 block w-full border file:mr-4 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-teal-100 file:text-teal-700 hover:file:bg-gray-500 border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-zinc-500 focus:border-zinc-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                     accept="image/*"
                   />
-                  <p v-if="errors.image" class="text-red-500 text-sm">{{ errors.image[0] }}</p>
+                  <p v-if="errors.imagebefore" class="text-red-500 text-sm">{{ errors.imagebefore[0] }}</p>
                 </div>
                 <!-- Deskripsi -->
                 <div>
@@ -140,6 +110,7 @@
                 <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">Simpan</button>
               </div>
             </form>
+            <!-- form -->
           </div>
         </div>
       </transition>
@@ -151,33 +122,29 @@
 import { ref, reactive, onMounted, computed, watch } from 'vue'
 import assetService from '@/services/assetService'
 import urgencyService from '@/services/urgencyService'
-import inspeksiService from '@/services/inspeksiService'
+import maintencneService from '@/services/maintenanceService'
 import { useToast } from 'vue-toastification'
 
 const emit = defineEmits(['close', 'store'])
 defineProps({ show: Boolean })
 
 const form = ref({
-  maintenance_needed: '',
   asset_id: '',
   asset_name_search: '',
-  type_id: '',
+  type_id: 2,
   urgency_id: '',
   description: '',
-  image: null,
+  imagebefore: null,
 })
+
 const toast = useToast()
 
 const loading = ref(false)
 const error = ref(null)
 const errors = reactive({})
 const assets = ref([])
-const types = ref([
-  { id: 1, name: 'Inspeksi' },
-  { id: 2, name: 'Breakdown' },
-])
-const urgencies = ref([])
 
+const urgencies = ref([])
 onMounted(async () => {
   loading.value = true
   try {
@@ -226,9 +193,10 @@ function selectAsset(asset) {
 }
 
 const handleFileChange = (e) => {
-  form.value.image = e.target.files[0]
+  form.value.imagebefore = e.target.files[0]
 }
 
+// type_id otomatis menggunakan id 2 karena ini brakdown
 const submitForm = async () => {
   error.value = null
   Object.keys(errors).forEach((key) => (errors[key] = null))
@@ -238,16 +206,9 @@ const submitForm = async () => {
     return
   }
 
-  // const payload = new FormData()
-  // for (const key in form) {
-  //   if (form[key] !== null) {
-  //     payload.append(key, form[key])
-  //   }
-  // }
-  // console.log('Payload:', form)
   loading.value = true
   try {
-    const res = await inspeksiService.stores(form)
+    const res = await maintencneService.stores(form)
     Object.keys(form.value).forEach((key) => (form.value[key] = ''))
     emit('store')
     toast.success(res.message)

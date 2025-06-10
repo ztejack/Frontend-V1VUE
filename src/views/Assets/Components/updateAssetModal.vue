@@ -6,7 +6,7 @@
 
       <!-- Modal panel -->
       <div
-        class="inline-block px-4 pt-5 pb-4 overflow-hidden text-left align-bottom transition-all transform bg-white rounded-lg shadow-xl dark:bg-gray-800 sm:my-8 sm:p-6"
+        class="inline-grid w-4xl px-4 pt-5 pb-4 text-left align-bottom transition-all transform bg-white rounded-lg shadow-xl dark:bg-gray-800 sm:my-8 sm:p-6"
       >
         <div class="flex justify-between items-start mb-4">
           <h3 class="text-lg font-medium leading-6 text-gray-900 dark:text-white">Edit Aset</h3>
@@ -42,18 +42,6 @@
                 required
               />
               <p v-if="fieldErrors.asset_name" class="text-sm text-red-500 mt-1">{{ fieldErrors.asset_name[0] }}</p>
-            </div>
-
-            <!-- Stock Code -->
-            <div>
-              <label for="stockcode" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Stock Code</label>
-              <input
-                type="text"
-                id="stockcode"
-                v-model="formData.stockcode"
-                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-zinc-500 focus:border-zinc-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-              />
-              <p v-if="fieldErrors.stockcode" class="text-sm text-red-500 mt-1">{{ fieldErrors.stockcode[0] }}</p>
             </div>
 
             <!-- Serial Number -->
@@ -227,7 +215,6 @@ const statuses = ref([])
 
 const formData = reactive({
   asset_name: '',
-  stockcode: '',
   serialnumber: '',
   brand: '',
   model: '',
@@ -256,7 +243,6 @@ const fetchReferenceData = async () => {
 
     const asset = assetdataRes.data
     formData.asset_name = asset.asset_name || ''
-    formData.stockcode = asset.stockcode || ''
     formData.serialnumber = asset.serialnumber || ''
     formData.brand = asset.brand || ''
     formData.model = asset.model || ''

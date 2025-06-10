@@ -62,10 +62,6 @@
                 <dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ maintenance.asset.asset_name }}</dd>
               </div>
               <div>
-                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Stock Code</dt>
-                <dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ maintenance.asset.stockcode }}</dd>
-              </div>
-              <div>
                 <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Serial Number</dt>
                 <dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ maintenance.asset.serialnumber }}</dd>
               </div>

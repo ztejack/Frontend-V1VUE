@@ -23,6 +23,58 @@ export default {
       throw error
     }
   },
+  stores: async (data) => {
+    try {
+      const formData = new FormData()
+      for (const key in data.value) {
+        formData.append(key, data.value[key])
+      }
+      // Debug isi FormData
+      console.log('data.value', data.value)
+      // console.log('=== FormData Contents ===')
+      // for (let pair of formData.entries()) {
+      //   console.log(`${pair[0]}:`, pair[1])
+      // }
+      const response = await api.post(endpoint, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      })
+      return response.data
+    } catch (error) {
+      console.error('Gagal menyimpan Maintenance:', error)
+      throw error
+    }
+  },
+  update: async (id, data) => {
+    try {
+      const formData = new FormData()
+      for (const key in data.value) {
+        formData.append(key, data.value[key])
+      }
+      // Debug isi FormData
+      console.log('data.value', data.value)
+
+      // console.log('=== FormData Contents ===')
+      // for (let pair of formData.entries()) {
+      //   console.log(`${pair[0]}:`, pair[1])
+      // }
+      const response = await api.post(`${endpoint}/${id}`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      })
+      return response.data
+    } catch (error) {
+      console.error('Gagal update Maintenance:', error)
+      throw error
+    }
+  },
+  delete: async (id) => {
+    try {
+      const response = await api.delete(`${endpoint}/${id}`)
+      return response.data
+    } catch (error) {
+      console.error('Gagal menghapus Maintenance:', error)
+      throw error
+    }
+  },
   // getSelfMaintenance(page = 1) {
   //   return api.get(`/maintenance/self?page=${page}`)
   // },

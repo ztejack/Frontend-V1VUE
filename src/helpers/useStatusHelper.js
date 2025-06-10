@@ -7,7 +7,7 @@ const statusList = ref([])
 const fetchStatusList = async () => {
   try {
     const res = await statusService.getAll()
-    statusList.value = res.data // ← Perubahan di sini
+    statusList.value = res.data
   } catch (error) {
     console.error('Gagal mengambil status:', error)
   }
@@ -15,8 +15,8 @@ const fetchStatusList = async () => {
 
 // Ambil nama status berdasarkan ID
 const getStatusNameById = (id) => {
-  const status = statusList.value.find((s) => s[0] === id)
-  return status ? status[1] : 'tidak diketahui'
+  const status = statusList.value.find((s) => s.id === id)
+  return status ? status.status : 'tidak diketahui'
 }
 
 // Ambil class warna status dari nama

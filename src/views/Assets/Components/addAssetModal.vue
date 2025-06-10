@@ -96,7 +96,6 @@ const locations = ref([])
 const statuses = ref([])
 
 const form = ref({
-  stockcode: '',
   serialnumber: '',
   asset_name: '',
   model: '',
@@ -111,7 +110,6 @@ const form = ref({
 })
 
 const formItems = ref([
-  { name: 'Stock Code', id: 'stockcode', type: 'text' },
   { name: 'Serial Number', id: 'serialnumber', type: 'text' },
   { name: 'Nama Asset', id: 'asset_name', type: 'text' },
   { name: 'Model', id: 'model', type: 'text' },

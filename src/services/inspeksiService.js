@@ -40,6 +40,15 @@ export default {
       throw error
     }
   },
+  delete: async (id) => {
+    try {
+      const response = await api.delete(`${endpoint}/${id}`)
+      return response.data
+    } catch (error) {
+      console.error('Gagal menghapus Inspeksi:', error)
+      throw error
+    }
+  },
   // status: async () => {
   //   const res = await api.get(stusendpoint, { params: { statustype: 'MTNC' } })
   //   return res.data

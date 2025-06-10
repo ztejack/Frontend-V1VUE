@@ -44,10 +44,6 @@
               <dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ asset.asset_name }}</dd>
             </div>
             <div>
-              <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Stock Code</dt>
-              <dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ asset.stockcode }}</dd>
-            </div>
-            <div>
               <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Serial Number</dt>
               <dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ asset.serialnumber }}</dd>
             </div>
@@ -101,12 +97,12 @@
         <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
           <h3 class="text-lg font-semibold mb-4 text-gray-800 dark:text-white">Foto Aset</h3>
 
-          <div class="mt-2">
+          <div class="mt-2 flex justify-center">
             <img
               v-if="asset.image"
               :src="asset.image"
               :alt="asset.asset_name"
-              class="w-full h-auto rounded-md object-cover shadow-sm"
+              class="max-w-full max-h-[400px] object-contain rounded-md shadow-sm"
             />
             <div
               v-else
